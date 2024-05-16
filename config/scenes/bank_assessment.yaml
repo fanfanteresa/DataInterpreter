@@ -1,0 +1,36 @@
+name: branch_assessment
+desc: This set of tasks is used to generate a brief report about performance of branches of a commercial bank for business people
+tasks:
+  - name: "ri_find"
+    desc: "find the important columns"
+    guidance: |
+      The current task is about to find the most important fields when interpreting a report. Please note the following:
+      - Do the judgement based on the background information of the report including column description.
+      - Columns are fundamental if they directly represent the performance indicators for commercial bank branches,
+      - derived metrics like comparisons and not considered as basic or primary for initial analysis.
+  - name: "ri_summary"
+    desc: "output statics for important columns as a report interpreter"
+    guidance: |
+      The current task to about to summarize a report. 
+      You should write a summary about this report based on those important fields being selected in the previous task. 
+      Please do the following
+        - Output the total number.
+        - Output the average number.
+        - Output the top 3.
+        - Output the lowest 3.
+      Please note that:
+        - Percentage numbers cannot be added to produce a total number, they can only be averaged.
+      Please generate the information in following format:
+        total xxx is {total_number}, average xxx is {average_number}, the top3 are ..., the last 3 are ...
+  - name: "ri_compare"
+    desc: "comparison among report table"
+    guidance: |
+      The current task is about comparison among the report. Please note the following:
+        - You are one of those items in the report
+        - Compare yourself to the average statistics that have been calculated in the previous task
+        - Compare yourself to the previous one in the ranking list
+      Output like:
+        - Ranked xx/xx in the amount of task completion, outraged average by xxxx
+        - Ranked xx/xx in the rate of task completion, outraged average by xx.xx%
+        - The difference in completion amount compared to the previous one is xxxx
+        - The difference in completion rate compared by the previous one is xx.xx%

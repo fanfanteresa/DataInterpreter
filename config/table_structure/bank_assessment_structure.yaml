@@ -1,0 +1,21 @@
+table_type: report
+description: The performance indicators for commercial bank branches.
+columns:
+  - column_name: "BranchName"
+    data_type: "str"
+    description: "name of a branch"
+  - column_name: "CompletionVolume"
+    data_type: "int64"
+    description: "the number of completed tasks"
+  - column_name: "CompletionRate"
+    data_type: "float32"
+    description: "the rate of completed task over total tasks"
+  - column_name: "CompletionVolume-compared_by_average"
+    data_type: "int64"
+    description: "delta compared to averaged number of completed tasks"
+  - column_name: "CompletionVolume-Compared_to_the_Previous_Rank"
+    data_type: "int64"
+    description: "delta of task completed compared to the previous one in the completed task volume ranking list"
+  - column_name: "CompletionRate-Compared_to_the_Previous_Rank"
+    data_type: "int64"
+    description: "delta of completion rate compared to the previous one in the completed task rate ranking list"

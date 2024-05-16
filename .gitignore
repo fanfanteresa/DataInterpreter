@@ -1,0 +1,5 @@
+.chainlit/
+data/
+logs/
+metagpt/
+tmp.py
