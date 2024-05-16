@@ -11,9 +11,10 @@ from utils.yaml_model import YamlModel
 
 
 class TaskTypeDef(BaseModel):
-    name: str
+    name: str = ""
     desc: str = ""
     guidance: str = ""
+
 
 '''
 总计，总共完成了多少，平均完成率，平均完成量，完成最好的三家，完成最差的3个，
@@ -24,7 +25,7 @@ class TaskTypeDef(BaseModel):
 class Scene(YamlModel):
     name: str = ""
     desc: str = ""
-    tasks: List[TaskTypeDef] = Field(default_factory=TaskTypeDef)
+    tasks: List[TaskTypeDef] = []
 
     @model_validator(mode="after")
     def add_extra_tasks(self):
@@ -44,59 +45,31 @@ class Scene(YamlModel):
     def default(cls):
         return cls.from_yaml_file(Path(METAGPT_ROOT / "config/scenes/default.yaml"))
 
-    @classmethod
-    def from_file(cls, file_path):
-
-
 
 class SceneRegistry(BaseModel):
-    scenes: dict = {}
-
-    @model_validator(mode="after")
-    def register(self):
-        scene_dir = METAGPT_ROOT / "config/scenes/"
-        for file in os.listdir(scene_dir):
-            filepath = os.path.join(scene_dir, file)
-            self.register_scene(filepath)
-        # self.scenes["default"] = Scene.default()
+    scene: Scene = Field(default_factory=Scene)
 
     def register_scene(
-        self,
-        scene_path,
-        verbose=False,
+            self,
+            scene_path,
+            verbose=False,
     ):
-        # scene = Scene.from_yaml_file(Path(METAGPT_ROOT / "config/scenes/bank_assessment.yaml"))
         scene = Scene.from_yaml_file(scene_path)
         scene_name = scene.name
-        if self.has_scene(scene_name):
-            return
-        self.scenes[scene_name] = scene
+        self.scene = scene
 
         if verbose:
-            logger.info(f"{scene_name} registered")
+            logger.info(f"Prompt file {scene_name} registered")
 
-    def has_scene(self, key: str) -> bool:
-        return key in self.scenes
-
-    def get_scene(self, key) -> Scene:
-        return self.scenes.get(key)
-
-    def get_all_scenes(self) -> dict[str, Scene]:
-        return self.scenes
-
-    def get_default(self):
-        return self.get_scene("default")
+    def get_scene(self) -> Scene:
+        return self.scene
 
     def get_task_guidance(self, task_type_name: str):
-        for scene_name in self.scenes:
-            scene = self.scenes[scene_name]
-            for tt in scene.tasks:
-                if tt.name == task_type_name:
-                    return tt.guidance
+        for tt in self.scene.tasks:
+            if tt.name == task_type_name:
+                return tt.guidance
         return ""
-
 
 
 # Registry instance
 SCENE_REGISTRY = SceneRegistry()
-

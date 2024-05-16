@@ -24,12 +24,9 @@ class WritePlan(Action):
     PROMPT_TEMPLATE: str = """
     # Context:
     {context}
-    # Available Scene Types:
-    {scene_type_desc}
     # Available Task Types:
     {task_type_desc}
     # Task:
-    To begin with, you need to choose a scene as the report setting. Use tasks belonged with the chosen scene to write a plan.
     Based on the context, write a plan or modify an existing plan of what you should do to achieve the goal. A plan consists of one to {max_tasks} tasks.
     If you are modifying an existing plan, carefully follow the instruction, don't make unnecessary changes. Give the whole plan unless instructed to modify only one task of the plan.
     If you encounter errors on the current task, revise and output the current single task only.
@@ -49,18 +46,12 @@ class WritePlan(Action):
 
     @cl.step(type="tool", show_input="json", language="str")
     async def run(self, context: list[Message], max_tasks: int = 5) -> str:
-        scenes = [SCENE_REGISTRY.get_scene(ss) for ss in SCENE_REGISTRY.get_all_scenes() if ss != "default"]
-        scene_type_desc = "\n".join([f"{ss.name}: {ss.desc}" for ss in scenes])
-        task_type_buffer = []
-        for ss in scenes:
-            task_type_desc = "for {} scene, there are following tasks: \n".format(ss.name) + \
-                             "\n".join([f"- **{tt.name}**: {tt.desc}" for tt in ss.tasks])
-            task_type_buffer.append(task_type_desc)
+        scene = SCENE_REGISTRY.get_scene()
+        task_type_desc = "\n".join([f"- **{tt.name}**: {tt.desc}" for tt in scene.tasks])
         prompt = self.PROMPT_TEMPLATE.format(
             context="\n".join([str(ct) for ct in context]),
-            scene_type_desc=scene_type_desc,
+            task_type_desc=task_type_desc,
             max_tasks=max_tasks,
-            task_type_desc="\n".join(task_type_buffer)
         )
         rsp = await self._aask(prompt)
         rsp = CodeParser.parse_code(block=None, text=rsp)

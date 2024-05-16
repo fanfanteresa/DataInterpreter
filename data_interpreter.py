@@ -16,9 +16,10 @@ from prompts.write_analysis_code import DATA_INFO
 from prompts.user_personalized_requirement import USER_PERSONALIZED_REQUIREMENT_PROMPT
 from role import Role
 from schema import Message, Task, TaskResult
+from strategy import SCENE_REGISTRY
 from tools.tool_recommend import BM25ToolRecommender, ToolRecommender
 from utils.common import CodeParser
-from utils.yaml_model import YamlModel
+
 
 REACT_THINK_PROMPT = """
 # User Requirement
@@ -192,13 +193,11 @@ class DataInterpreter(Role):
             data_info = DATA_INFO.format(info=result)
             self.working_memory.add(Message(content=data_info, role="user", cause_by=CheckData))
 
-    async def run(self, with_message, data_file, data_structure_file) -> Message | None:
-        table_info = YamlModel.read_yaml(data_structure_file)
+    async def run(self, with_message, data_file, prompt_file) -> Message | None:
+        SCENE_REGISTRY.register_scene(prompt_file, verbose=True)
         user_req = USER_PERSONALIZED_REQUIREMENT_PROMPT.format(
             user_requirement=with_message,
-            data_file=data_file,
-            table_desc=table_info["description"],
-            column_info="\n".join([f"    - {cc['column_name']}: {cc['description']}" for cc in table_info["columns"]]),
+            data_file=data_file
         )
         return await super().run(user_req)
 

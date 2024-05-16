@@ -45,7 +45,7 @@ async def on_message(message: cl.Message):
             ]
         ).send()
 
-    structure_file = files[0].path
+    prompt_file = files[0].path
 
     bot = cl.user_session.get("di")
 
@@ -53,7 +53,7 @@ async def on_message(message: cl.Message):
     await msg.send()
 
     # step 1: user request and first response from the bot
-    rsp = await bot.run(message.content, data_file, structure_file)
+    rsp = await bot.run(message.content, data_file, prompt_file)
     logger.info(rsp)
     save_history(role=bot)
     # response_message = rsp
